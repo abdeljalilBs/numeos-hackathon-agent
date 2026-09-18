@@ -14,6 +14,8 @@ import conversationsRoutes from './routes/conversations.js';
 import messagesRoutes from './routes/messages.js';
 import escalationsRoutes from './routes/escalations.js';
 import scheduledFollowupsRoutes from './routes/scheduled_followups.js';
+import agentRoutes from './routes/agent.js';
+import whatsappRoutes from './routes/whatsapp.js'; // ✅ AJOUTÉ POUR WHATSAPP
 
 dotenv.config();
 
@@ -47,13 +49,15 @@ await app.register(conversationsRoutes, { prefix: '/api/conversations' });
 await app.register(messagesRoutes, { prefix: '/api/messages' });
 await app.register(escalationsRoutes, { prefix: '/api/escalations' });
 await app.register(scheduledFollowupsRoutes, { prefix: '/api/scheduled-followups' });
+await app.register(agentRoutes, { prefix: '/api/agent' });
+await app.register(whatsappRoutes, { prefix: '/api' }); // ✅ ENREGISTRÉ ICI
 
 const start = async () => {
   try {
     const port = Number(process.env.PORT) || 3000;
     await app.listen({ port, host: '0.0.0.0' });
     app.log.info(`🚀 Serveur Numeos Agent démarré sur http://0.0.0.0:${port}`);
-    
+
     const res = await pool.query('SELECT COUNT(*) as count FROM products');
     app.log.info(`✅ PostgreSQL connecté - ${res.rows[0].count} produits chargés`);
   } catch (err) {
