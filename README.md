@@ -1,28 +1,26 @@
-# ️ Numeos Hackathon Agent - Agent Commercial Autonome E-commerce Maroc
+# 🤖 Numeos Hackathon Agent - Agent Commercial Autonome
 
-Agent commercial intelligent connecté au catalogue Kenza, capable de comprendre le langage naturel et d'interroger une base de données PostgreSQL en temps réel pour recommander des produits pertinents.
+Agent commercial intelligent connecté au catalogue Kenza, capable de comprendre le langage naturel et d'interroger une base de données PostgreSQL en temps réel.
 
-## 🚀 Fonctionnalités Validées
+## ✅ Ce qui est fonctionnel (Tâches 1, 2 & 3)
 
-- **Compréhension NLP** : Analyse des intentions client (recherche produit, filtre prix, catégorie) via GPT-4.1/Azure OpenAI
-- **Connexion DB Temps Réel** : Requêtes SQL dynamiques générées par l'IA sur PostgreSQL (80 produits, 120 clients, 320 commandes)
-- **API REST Documentée** : Endpoint `/api/agent/chat` testable via Postman/cURL
-- **Architecture Modulaire** : Fastify + TypeScript ESM + Docker Compose
-- **Zéro Hallucination Données** : L'agent ne répond qu'avec des produits existants en base
+- **Infrastructure** : Docker Compose avec PostgreSQL + Redis
+- **Backend API** : Fastify + TypeScript ESM sur port 3000
+- **Base de Données** : 80 produits, 120 clients, 320 commandes seedés
+- **Routes API** : `/api/products`, `/api/clients`, `/api/orders` fonctionnelles
+- **Agent LLM** : Endpoint `/api/agent/chat` connecté à Azure OpenAI (GPT-4.1)
+- **Function Calling** : L'agent exécute des requêtes SQL réelles (zéro hallucination)
 
-## 🏗️ Architecture Technique
+## ⚡ Démarrage Rapide
 
-```text
-numeos-hackathon-agent/
-── backend/
-│   ├── src/
-│   │   ├── agents/       # Cerveau LLM (Numeos Agent)
-│   │   ├── routes/       # API REST (Products, Clients, Orders, Agent)
-│   │   ├── db/           # Pool PostgreSQL
-│   │   └── index.ts      # Entry point Fastify
-│   ├── docker-compose.yml
-│   └── .env              # Clés API Azure OpenAI + DB Credentials
-├── db/init/
-│   ├── 01-schema.sql     # Schéma complet (10 tables)
-│   └── 02-seed-data.sql  # Données Kenza (80 produits seedés)
-└── USER_STORIES.md
+```bash
+# 1. Lancer la DB
+docker compose up -d
+
+# 2. Installer & lancer le backend
+cd backend && npm install && npm run dev
+
+# 3. Tester l'agent
+curl -X POST http://localhost:3000/api/agent/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Je cherche un sac en cuir < 800 MAD"}'
