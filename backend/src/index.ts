@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import dotenv from 'dotenv';
 import pool from './db/index.js';
+import productsRoutes from './routes/products.js';
 
 dotenv.config();
 
@@ -9,10 +10,14 @@ const app = Fastify({
   logger: { transport: { target: '@fastify/one-line-logger' } },
 });
 
+// Configuration CORS
 await app.register(cors, {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
 });
+
+// Enregistrement des routes avec préfixe
+await app.register(productsRoutes, { prefix: '/api/products' });
 
 // Route santé
 app.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
