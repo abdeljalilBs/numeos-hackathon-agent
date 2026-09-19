@@ -19,6 +19,7 @@
   "dependencies": {
     "@fastify/cors": "^11.3.0",
     "@fastify/env": "^7.0.0",
+    "@fastify/formbody": "^9.0.0",
     "@fastify/one-line-logger": "^2.2.0",
     "@langchain/core": "^1.2.11",
     "@langchain/openai": "^1.5.13",
