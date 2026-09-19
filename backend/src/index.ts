@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import formBody from '@fastify/formbody'; // ✅ AJOUTÉ ICI
 import dotenv from 'dotenv';
 import pool from './db/index.js';
 
@@ -15,7 +16,7 @@ import messagesRoutes from './routes/messages.js';
 import escalationsRoutes from './routes/escalations.js';
 import scheduledFollowupsRoutes from './routes/scheduled_followups.js';
 import agentRoutes from './routes/agent.js';
-import whatsappRoutes from './routes/whatsapp.js'; // ✅ AJOUTÉ POUR WHATSAPP
+import whatsappRoutes from './routes/whatsapp.js';
 
 dotenv.config();
 
@@ -29,6 +30,9 @@ await app.register(cors, {
   credentials: true,
 });
 
+// ✅ ENREGISTRER LE PARSER FORM-BODY (CRUCIAL POUR WHATSAPP/TWILIO)
+await app.register(formBody);
+
 // Route santé
 app.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
 
@@ -38,7 +42,7 @@ app.get('/api/test-db', async () => {
   return { products: Number(result.rows[0].product_count) };
 });
 
-// Enregistrement modulaire des routes avec leurs préfixes distincts
+// Enregistrement modulaire des routes
 await app.register(productsRoutes, { prefix: '/api/products' });
 await app.register(clientsRoutes, { prefix: '/api/clients' });
 await app.register(ordersRoutes, { prefix: '/api/orders' });
@@ -50,14 +54,14 @@ await app.register(messagesRoutes, { prefix: '/api/messages' });
 await app.register(escalationsRoutes, { prefix: '/api/escalations' });
 await app.register(scheduledFollowupsRoutes, { prefix: '/api/scheduled-followups' });
 await app.register(agentRoutes, { prefix: '/api/agent' });
-await app.register(whatsappRoutes, { prefix: '/api' }); // ✅ ENREGISTRÉ ICI
+await app.register(whatsappRoutes, { prefix: '/api' });
 
 const start = async () => {
   try {
     const port = Number(process.env.PORT) || 3000;
     await app.listen({ port, host: '0.0.0.0' });
     app.log.info(`🚀 Serveur Numeos Agent démarré sur http://0.0.0.0:${port}`);
-
+    
     const res = await pool.query('SELECT COUNT(*) as count FROM products');
     app.log.info(`✅ PostgreSQL connecté - ${res.rows[0].count} produits chargés`);
   } catch (err) {
