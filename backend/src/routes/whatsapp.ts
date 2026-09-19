@@ -5,9 +5,9 @@ export default async function whatsappRoutes(fastify: FastifyInstance) {
   fastify.log.info('📱 Routes WhatsApp initialisées');
 
   // POST /api/webhooks/whatsapp - Reçoit les messages entrants de Twilio
-  fastify.post<{ Body: any }>('/webhooks/whatsapp', async (request, reply) => {
+  fastify.post('/webhooks/whatsapp', async (request: any, reply: any) => {
     try {
-      const { Body: userMessage, From: senderNumber } = request.body || {};
+      const { Body: userMessage, From: senderNumber } = (request.body as any) || {};
       
       if (!userMessage) {
         fastify.log.warn('⚠️ Message WhatsApp vide reçu');
@@ -24,9 +24,10 @@ export default async function whatsappRoutes(fastify: FastifyInstance) {
 <Response>
   <Message>${escapeXml(agentResponse.reply)}</Message>`;
 
-      // 3. Si des produits sont trouvés, ajouter leurs détails
-      if (agentResponse.action_result?.products?.length > 0) {
-        const productsText = agentResponse.action_result.products
+      // 3. Si des produits sont trouvés dans l'action_result (si présent)
+      const actionResult = (agentResponse as any).action_result;
+      if (actionResult?.products?.length > 0) {
+        const productsText = actionResult.products
           .map((p: any) => `• ${p.modele} - ${p.prix_mad} MAD (Stock: ${p.stock})`)
           .join('\n');
         
@@ -42,8 +43,8 @@ export default async function whatsappRoutes(fastify: FastifyInstance) {
       reply.header('Content-Type', 'text/xml');
       return twimlResponse;
 
-    } catch (error) {
-      fastify.log.error(' Erreur Webhook WhatsApp:', error);
+    } catch (error: any) {
+      fastify.log.error(error, 'Erreur Webhook WhatsApp');
       reply.header('Content-Type', 'text/xml');
       return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
